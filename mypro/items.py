@@ -6,6 +6,8 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+from scrapy.contrib.loader.processor import MapCompose
+from w3lib.html import remove_tags
 
 
 class MyproItem(scrapy.Item):
@@ -14,10 +16,21 @@ class MyproItem(scrapy.Item):
     pass
 
 
+def strip_res(value):
+    if value:
+        return value.strip()
+
+
 class DmozItem(scrapy.Item):
-    title = scrapy.Field()
-    link = scrapy.Field()
-    desc = scrapy.Field()
+    title = scrapy.Field(
+        input_processor=MapCompose(remove_tags, strip_res)
+    )
+    link = scrapy.Field(
+        input_processor=MapCompose(remove_tags, strip_res)
+    )
+    desc = scrapy.Field(
+        input_processor=MapCompose(remove_tags, strip_res)
+    )
 
     def is_null(self):
         if self['title'] and self['link'] and self['desc']:
